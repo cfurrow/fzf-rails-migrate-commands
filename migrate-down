@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Use FZF to list migration files, and upon selection, call rails db:migrate:down for that schema version
+files=$(ls -l db/migrate/*.rb | awk '{print $9}' | sort --reverse) &&
+  migration_file=$(echo "$files" | fzf +m) &&
+  echo "⬇️  Migrating down $migration_file ..."
+  bin/rails db:migrate:down VERSION="$(echo "${migration_file}" | awk '{print $1}' | sed -E "s/.*\/migrate\/([0-9]+)_.*/\1/g" | sort)"
